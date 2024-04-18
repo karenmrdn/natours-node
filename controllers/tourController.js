@@ -4,7 +4,31 @@ const Tour = require('../models/tourModel');
 
 exports.getTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    const queryCopy = { ...req.query };
+    const excludedField = ['sort', 'page', 'fields', 'limit'];
+    excludedField.forEach((field) => delete queryCopy[field]);
+
+    let queryCopyStr = JSON.stringify(queryCopy);
+    queryCopyStr = queryCopyStr.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`,
+    );
+    console.log(JSON.parse(queryCopyStr));
+
+    const query = Tour.find(JSON.parse(queryCopyStr));
+
+    // const query = Tour.find({
+    //   duration: req.query.duration,
+    //   difficulty: req.query.difficulty,
+    // });
+    //         --- OR ---
+    // const query = Tour.find()
+    //   .where('duration')
+    //   .equals(req.query.duration)
+    //   .where('difficulty')
+    //   .equals(req.query.difficulty);
+
+    const tours = await query;
 
     res.status(200).json({
       status: 'success',
