@@ -21,7 +21,7 @@ class ApiFeatures {
   }
 
   sort() {
-    if (this.queryStr) {
+    if (this.queryStr.sort) {
       const sortBy = this.queryStr.sort.replaceAll(',', ' ');
       this.query = this.query.sort(sortBy);
     } else {
