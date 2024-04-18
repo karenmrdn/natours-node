@@ -25,6 +25,15 @@ exports.getTours = async (req, res) => {
       query = query.sort('-createdAt');
     }
 
+    // Field limiting
+    if (req.query.fields) {
+      const fields = req.query.fields.replace(',', ' ');
+      // this is called projecting
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+
     // const query = Tour.find({
     //   duration: req.query.duration,
     //   difficulty: req.query.difficulty,
