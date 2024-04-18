@@ -34,16 +34,17 @@ exports.getTours = async (req, res) => {
       query = query.select('-__v');
     }
 
-    // const query = Tour.find({
-    //   duration: req.query.duration,
-    //   difficulty: req.query.difficulty,
-    // });
-    //         --- OR ---
-    // const query = Tour.find()
-    //   .where('duration')
-    //   .equals(req.query.duration)
-    //   .where('difficulty')
-    //   .equals(req.query.difficulty);
+    // Pagination
+    const page = +req.query.page || 1;
+    const limit = +req.query.limit || 100;
+    const skip = (page - 1) * limit;
+
+    if (req.query.page) {
+      const documentsCount = await Tour.countDocuments();
+      if (skip >= documentsCount) throw new Error('This page does not exist');
+    }
+
+    query = query.skip(skip).limit(limit);
 
     const tours = await query;
 
