@@ -1,6 +1,15 @@
 const Tour = require('../models/tourModel');
 
-// ROUTER HANDLERS
+// Middlewares
+
+exports.aliasTop5Cheap = (req, res, next) => {
+  req.query.limit = 5;
+  req.query.fields = 'name,price,ratingsAverage';
+  req.query.sort = '-ratingsAverage,price';
+  next();
+};
+
+// Route handles
 
 exports.getTours = async (req, res) => {
   try {
@@ -19,7 +28,7 @@ exports.getTours = async (req, res) => {
 
     // Sorting
     if (req.query.sort) {
-      const sortBy = req.query.sort.replace(',', ' ');
+      const sortBy = req.query.sort.replaceAll(',', ' ');
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
@@ -27,7 +36,7 @@ exports.getTours = async (req, res) => {
 
     // Field limiting
     if (req.query.fields) {
-      const fields = req.query.fields.replace(',', ' ');
+      const fields = req.query.fields.replaceAll(',', ' ');
       // this is called projecting
       query = query.select(fields);
     } else {
